@@ -124,6 +124,13 @@ class FullPageLayoutForItem extends StatelessWidget {
   Widget build(BuildContext context) {
     this.imageSize = MediaQuery.of(context).size.width * 0.75;
 
+    return ListView(
+        children: [
+          imageBox(imageSize),
+          textBox()
+        ]
+    );
+
     return Container(
         padding: const EdgeInsets.all(8.0),
         alignment: Alignment.topLeft,
@@ -134,7 +141,7 @@ class FullPageLayoutForItem extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  imageBox(),
+//                  imageBox(),
                   textBox()
                 ]
             )
@@ -142,19 +149,28 @@ class FullPageLayoutForItem extends StatelessWidget {
     );
   }
 
-  SizedBox imageBox() {
-    return SizedBox(
+  Widget imageBox(double imageSize) {
+    return Align(
+        alignment: Alignment.centerLeft,
+        child: SizedBox(
               width: imageSize,
               child: Image.asset(
                 'images/flippers-alpha.png',
               )
-          );
+          )
+    )
+    ;
   }
 
   Widget textBox() {
-    return Text(
-        "These are some flippers.  They're pretty cool if you wanna go in the sea",
-        textScaleFactor: 2
-    );
+    return Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(        """a broad flat limb without fingers, used for swimming by various sea animals such as seals, whales, and turtles.
+        a flat rubber attachment worn on the foot for underwater swimming.
+        a pivoted arm in a pinball machine, controlled by the player and used for sending the ball back up the table.""",
+          textScaleFactor: 1.3
+      )
+    )
+    ;
   }
 }
