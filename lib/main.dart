@@ -11,13 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
+
+
 void main() {
 //  debugPaintSizeEnabled = false; // Remove to suppress visual layout
 
-  runApp(MyApp());
+  runApp(KeithAndColinDoFlutter());
 }
 
-class MyApp extends StatelessWidget {
+class KeithAndColinDoFlutter extends StatelessWidget {
   double screenWidth;
 
   @override
@@ -25,26 +27,47 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter layout demo',
         theme: ThemeData.light(),
-        home: RowAndColumnThing()
+        home: HomePage()
 
         ///      ),
         );
   }
 }
 
-class RowAndColumnThing extends StatelessWidget {
+class Item {
+  String name;
+  String imageUrl;
+  String description;
+
+  Item(String name, String imageUrl, String description) {
+    this.name = name;
+    this.imageUrl = imageUrl;
+    this.description = description;
+  }
+}
+
+//class Item(String name, String imageUrl, String description) {
+//
+//}
+
+class HomePage extends StatelessWidget {
   double screenWidth;
 
   BuildContext context;
+
+  var chair = new Item("I am Chair", "images/chair-alpha.png", "Sit on me");
+  var binoculars = new Item("I see things", "images/binoculars-alpha.png", "An optical instrument with a lens for each eye, used for viewing distant objects.");
+  var flippers = new Item("Flipping Hell", "images/flippers-alpha.png", """a broad flat limb without fingers, used for swimming by various sea animals such as seals, whales, and turtles.
+        a flat rubber attachment worn on the foot for underwater swimming.
+        a pivoted arm in a pinball machine, controlled by the player and used for sending the ball back up the table.""");
 
   Widget buildColumn() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        buildRow("images/chair-alpha.png", "I am chair"),
-        buildRow("images/binoculars-alpha.png", "I see things"),
-        buildRow("images/flippers-alpha.png", "I swim"),
-        addNavButton()
+        createItemView(chair),
+        createItemView(binoculars),
+        createItemView(flippers),
       ],
     );
   }
@@ -58,14 +81,14 @@ class RowAndColumnThing extends StatelessWidget {
     ],
   );
 
-  Widget buildRow(String imageUrl, String description) {
+  Widget createItemView(Item item) {
     return Row(
       children: [
-        expandableImage(imageUrl),
+        expandableImage(item),
         Container(
           padding: EdgeInsets.all(15),
           child: Text(
-            description,
+            item.name,
             style: t,
             textScaleFactor: 2,
           ),
@@ -86,39 +109,54 @@ class RowAndColumnThing extends StatelessWidget {
 //    return buildColumn();
   }
 
-  Widget expandableImage(String imageUrl) {
+  Widget expandableImage(Item item) {
 //    return Hero(tag: imageUrl, child: SizedBox(width: screenWidth/4, child: Image.asset(imageUrl)));
-    return SizedBox(width: screenWidth / 4, child: Image.asset(imageUrl));
+    return InkWell(
+        onTap: navToSomeOtherPage(item),
+        child: SizedBox(width: screenWidth / 4, child: Image.asset(item.imageUrl))
+    );
   }
 
-  Widget addNavButton() {
-    return Center(
-        child: RaisedButton(
-            child: Text("Click Me"), onPressed: navToSomeOtherPage()));
-  }
+//  Widget addNavButton() {
+//    return Center(
+//        child: RaisedButton(
+//            child: Text("Click Me"), onPressed: navToSomeOtherPage()));
+//  }
 
-  navToSomeOtherPage() {
+  navToSomeOtherPage(Item item) {
     return () => {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => GarbageScreen()))
+              context, MaterialPageRoute(builder: (context) => GarbageScreen(item)))
         };
   }
 }
 
 class GarbageScreen extends StatelessWidget {
+  Item item;
+
+  GarbageScreen(Item item) {
+    this.item = item;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Garbage Page'),
+        title: Text(item.name),
       ),
-      body: FullPageLayoutForItem()
+      body: FullPageLayoutForItem(item)
     );
   }
 }
 
 class FullPageLayoutForItem extends StatelessWidget {
   double imageSize;
+
+  Item item;
+
+  FullPageLayoutForItem(Item item) {
+    this.item = item;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,44 +168,24 @@ class FullPageLayoutForItem extends StatelessWidget {
           textBox()
         ]
     );
-
-    return Container(
-        padding: const EdgeInsets.all(8.0),
-        alignment: Alignment.topLeft,
-        // Use background color to emphasize that it's a new route.
-//        color: Colors.green,
-        child: Hero(
-            tag: 'flippers',
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-//                  imageBox(),
-                  textBox()
-                ]
-            )
-        )
-    );
   }
 
   Widget imageBox(double imageSize) {
     return Align(
         alignment: Alignment.centerLeft,
         child: SizedBox(
-              width: imageSize,
-              child: Image.asset(
-                'images/flippers-alpha.png',
+                width: imageSize,
+                child: Image.asset(item.imageUrl)
               )
           )
-    )
     ;
   }
 
   Widget textBox() {
     return Container(
         padding: const EdgeInsets.all(8.0),
-        child: Text(        """a broad flat limb without fingers, used for swimming by various sea animals such as seals, whales, and turtles.
-        a flat rubber attachment worn on the foot for underwater swimming.
-        a pivoted arm in a pinball machine, controlled by the player and used for sending the ball back up the table.""",
+        child: Text(
+          item.description,
           textScaleFactor: 1.3
       )
     )
